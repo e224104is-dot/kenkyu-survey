@@ -1,7 +1,7 @@
 // ===============================
 // Google Apps Script のURL
 // ===============================
-const ENDPOINT_URL = "https://script.google.com/a/macros/kurume-it.ac.jp/s/AKfycbw2ulTgzMYdMuhJGnLjqEtUK1bHSmeVSmuZtOM8JFwSHyxsZMH6Xzufn7xjgJ23vjVWDA/exec";
+const ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbxMyUuk_FwM3vU_w_P_iRE-Vu9MkY73tFjUPKH26Z2042Gn5yGcZjOsDlP9HrY66E-I/exec";
 
 // ===============================
 // Big Five 質問データ（10問）
