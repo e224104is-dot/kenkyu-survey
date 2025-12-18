@@ -1,7 +1,8 @@
 // ===============================
 // Google Apps Script のURL
 // ===============================
-const ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbx3JehUTUFr8JKL9T84pytAzv1j7pjCqc18e0pEDForsz6r_vsmkSP62PRlcgtFDlgd/exec";
+const ENDPOINT_URL =
+  "https://script.google.com/macros/s/AKfycbzNfU8hBeIJCrZFIrEICsr7uaEOx5hnRfdU0hzeYbcfYV3_C07yLooXHVj3NGF_gALZ/exec";
 
 // ===============================
 // Big Five 質問データ（10問）
@@ -49,14 +50,13 @@ const nextBtn = document.getElementById("nextBtn");
 const appEl = document.getElementById("app");
 
 // ===============================
-// 質問表示（文章のみ選択肢）
+// 質問表示
 // ===============================
 function renderQuestion() {
   const q = questions[currentIndex];
 
   progressEl.textContent = `質問 ${currentIndex + 1} / ${questions.length}`;
   questionEl.textContent = q.text;
-
   choicesEl.innerHTML = "";
 
   const labels = [
@@ -100,23 +100,26 @@ function calculateScores() {
 }
 
 // ===============================
-// Google Sheets へ送信
+// ★ Google Sheets へ送信（CORS回避）
 // ===============================
 function sendToGoogleSheets(scores) {
+  // ★ ここが変更点
+  const params = new URLSearchParams();
+
+  params.append("timestamp", new Date().toISOString());
+  params.append("E", scores.E);
+  params.append("A", scores.A);
+  params.append("C", scores.C);
+  params.append("N", scores.N);
+  params.append("O", scores.O);
+  params.append(
+    "answers",
+    JSON.stringify(answers.map(a => a.value))
+  );
+
   fetch(ENDPOINT_URL, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      timestamp: new Date().toISOString(),
-      E: scores.E,
-      A: scores.A,
-      C: scores.C,
-      N: scores.N,
-      O: scores.O,
-      answers: answers.map(a => a.value)
-    })
+    body: params
   }).catch(err => {
     console.error("送信エラー:", err);
   });
