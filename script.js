@@ -1,5 +1,5 @@
 const ENDPOINT_URL =
-  "https://script.google.com/macros/s/AKfycbzNfU8hBeIJCrZFIrEICsr7uaEOx5hnRfdU0hzeYbcfYV3_C07yLooXHVj3NGF_gALZ/exec";
+  "https://script.google.com/macros/s/AKfycbzWzc5NKPsa6ORwaHOquCDtgc6Iq518ixK_PK4hPhNoSVYqTGYMvVTaGytSYeasKdfQ/exec";
 
 const questions = [
   { text: "外向的で、社交的である", trait: "E", reverse: false },
