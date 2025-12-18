@@ -1,0 +1,57 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  background: #eef;
+}
+
+#app {
+  max-width: 600px;
+  margin: 80px auto;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+h1 {
+  margin-top: 0;
+  text-align: center;
+}
+
+#progress {
+  text-align: center;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+#question {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+#choices label {
+  display: block;
+  margin: 8px 0;
+  cursor: pointer;
+}
+
+#choices input {
+  margin-right: 8px;
+}
+
+button {
+  display: block;
+  margin: 30px auto 0;
+  padding: 10px 30px;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  background: #4a7cff;
+  color: #fff;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #345fe0;
+}
