@@ -1,32 +1,19 @@
-// ===============================
-// Google Apps Script のURL
-// ===============================
 const ENDPOINT_URL =
   "https://script.google.com/macros/s/AKfycbzNfU8hBeIJCrZFIrEICsr7uaEOx5hnRfdU0hzeYbcfYV3_C07yLooXHVj3NGF_gALZ/exec";
 
-// ===============================
-// Big Five 質問データ（10問）
-// ===============================
 const questions = [
   { text: "外向的で、社交的である", trait: "E", reverse: false },
   { text: "内気で、物静かである", trait: "E", reverse: true },
-
   { text: "批判的で、衝突しやすい", trait: "A", reverse: true },
   { text: "寛容で、協調的である", trait: "A", reverse: false },
-
   { text: "信頼でき、しっかりしている", trait: "C", reverse: false },
   { text: "だらしなく、不注意である", trait: "C", reverse: true },
-
   { text: "不安になりやすく、心配性である", trait: "N", reverse: false },
   { text: "感情的に安定していて、落ち着いている", trait: "N", reverse: true },
-
   { text: "新しい経験に進んで取り組み、創造的である", trait: "O", reverse: false },
   { text: "伝統的で、創造性に欠ける", trait: "O", reverse: true }
 ];
 
-// ===============================
-// 質問順シャッフル
-// ===============================
 function shuffle(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -34,24 +21,15 @@ function shuffle(array) {
   }
 }
 
-// ===============================
-// 状態管理
-// ===============================
 let currentIndex = 0;
 const answers = [];
 
-// ===============================
-// DOM取得
-// ===============================
 const questionEl = document.getElementById("question");
 const choicesEl = document.getElementById("choices");
 const progressEl = document.getElementById("progress");
 const nextBtn = document.getElementById("nextBtn");
 const appEl = document.getElementById("app");
 
-// ===============================
-// 質問表示
-// ===============================
 function renderQuestion() {
   const q = questions[currentIndex];
 
@@ -77,9 +55,6 @@ function renderQuestion() {
   }
 }
 
-// ===============================
-// Big Five スコア計算
-// ===============================
 function calculateScores() {
   const scores = { E: [], A: [], C: [], N: [], O: [] };
 
@@ -99,11 +74,7 @@ function calculateScores() {
   return result;
 }
 
-// ===============================
-// ★ Google Sheets へ送信（CORS回避）
-// ===============================
 function sendToGoogleSheets(scores) {
-  // ★ ここが変更点
   const params = new URLSearchParams();
 
   params.append("timestamp", new Date().toISOString());
@@ -113,21 +84,23 @@ function sendToGoogleSheets(scores) {
   params.append("N", scores.N);
   params.append("O", scores.O);
   params.append(
-    "answers",
-    JSON.stringify(answers.map(a => a.value))
+    "responses",
+    JSON.stringify(
+      answers.map(a => ({
+        question: a.question,
+        trait: a.trait,
+        reverse: a.reverse,
+        value: a.value
+      }))
+    )
   );
 
   fetch(ENDPOINT_URL, {
     method: "POST",
     body: params
-  }).catch(err => {
-    console.error("送信エラー:", err);
   });
 }
 
-// ===============================
-// 結果表示
-// ===============================
 function showResult() {
   const scores = calculateScores();
   sendToGoogleSheets(scores);
@@ -145,9 +118,6 @@ function showResult() {
   `;
 }
 
-// ===============================
-// 次へボタン
-// ===============================
 nextBtn.addEventListener("click", () => {
   const selected = document.querySelector("input[name='choice']:checked");
   if (!selected) {
@@ -156,6 +126,7 @@ nextBtn.addEventListener("click", () => {
   }
 
   answers.push({
+    question: questions[currentIndex].text,
     trait: questions[currentIndex].trait,
     reverse: questions[currentIndex].reverse,
     value: Number(selected.value)
@@ -170,8 +141,5 @@ nextBtn.addEventListener("click", () => {
   }
 });
 
-// ===============================
-// 初期化
-// ===============================
 shuffle(questions);
 renderQuestion();
