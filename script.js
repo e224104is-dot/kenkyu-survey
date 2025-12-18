@@ -1,17 +1,17 @@
 const ENDPOINT_URL =
-  "https://script.google.com/macros/s/AKfycbxXoqb1Dq6fgL8cab3AWPXfOb42zITibaq9PBGzg8yjTWJKbuaq5EFzdgEDoI_kv0w/exec";
+  "https://script.google.com/macros/s/AKfycbxZeVjG0ALAXbV-QPS2UFNSA65aV9PT8lX7QTamSHQ06PUobHUFvB1oXs_oAJFpXKp9/exec";
 
 const questions = [
-  { text: "外向的で、社交的である", trait: "E", reverse: false },
-  { text: "内気で、物静かである", trait: "E", reverse: true },
-  { text: "批判的で、衝突しやすい", trait: "A", reverse: true },
-  { text: "寛容で、協調的である", trait: "A", reverse: false },
-  { text: "信頼でき、しっかりしている", trait: "C", reverse: false },
-  { text: "だらしなく、不注意である", trait: "C", reverse: true },
-  { text: "不安になりやすく、心配性である", trait: "N", reverse: false },
-  { text: "感情的に安定していて、落ち着いている", trait: "N", reverse: true },
-  { text: "新しい経験に進んで取り組み、創造的である", trait: "O", reverse: false },
-  { text: "伝統的で、創造性に欠ける", trait: "O", reverse: true }
+  { id: "Q1", text: "外向的で、社交的である", trait: "E", reverse: false },
+  { id: "Q2", text: "内気で、物静かである", trait: "E", reverse: true },
+  { id: "Q3", text: "批判的で、衝突しやすい", trait: "A", reverse: true },
+  { id: "Q4", text: "寛容で、協調的である", trait: "A", reverse: false },
+  { id: "Q5", text: "信頼でき、しっかりしている", trait: "C", reverse: false },
+  { id: "Q6", text: "だらしなく、不注意である", trait: "C", reverse: true },
+  { id: "Q7", text: "不安になりやすく、心配性である", trait: "N", reverse: false },
+  { id: "Q8", text: "感情的に安定していて、落ち着いている", trait: "N", reverse: true },
+  { id: "Q9", text: "新しい経験に進んで取り組み、創造的である", trait: "O", reverse: false },
+  { id: "Q10", text: "伝統的で、創造性に欠ける", trait: "O", reverse: true }
 ];
 
 function shuffle(array) {
@@ -59,8 +59,9 @@ function calculateScores() {
   const scores = { E: [], A: [], C: [], N: [], O: [] };
 
   answers.forEach(a => {
-    const value = a.reverse ? 6 - a.value : a.value;
-    scores[a.trait].push(value);
+    const q = questions.find(q => q.id === a.id);
+    const value = q.reverse ? 6 - a.value : a.value;
+    scores[q.trait].push(value);
   });
 
   const result = {};
@@ -75,25 +76,23 @@ function calculateScores() {
 }
 
 function sendToGoogleSheets(scores) {
+  const now = new Date();
+  const timestamp =
+    now.getFullYear() + "/" +
+    String(now.getMonth() + 1).padStart(2, "0") + "/" +
+    String(now.getDate()).padStart(2, "0") + " " +
+    String(now.getHours()).padStart(2, "0") + ":" +
+    String(now.getMinutes()).padStart(2, "0");
+
   const params = new URLSearchParams();
 
-  params.append("timestamp", new Date().toISOString());
+  params.append("timestamp", timestamp);
   params.append("E", scores.E);
   params.append("A", scores.A);
   params.append("C", scores.C);
   params.append("N", scores.N);
   params.append("O", scores.O);
-  params.append(
-    "responses",
-    JSON.stringify(
-      answers.map(a => ({
-        question: a.question,
-        trait: a.trait,
-        reverse: a.reverse,
-        value: a.value
-      }))
-    )
-  );
+  params.append("responses", JSON.stringify(answers));
 
   fetch(ENDPOINT_URL, {
     method: "POST",
@@ -106,15 +105,11 @@ function showResult() {
   sendToGoogleSheets(scores);
 
   appEl.innerHTML = `
-    <h1>診断結果</h1>
-    <ul>
-      <li>外向性（E）：${scores.E}</li>
-      <li>協調性（A）：${scores.A}</li>
-      <li>誠実性（C）：${scores.C}</li>
-      <li>神経症傾向（N）：${scores.N}</li>
-      <li>開放性（O）：${scores.O}</li>
-    </ul>
-    <p>ご回答ありがとうございました。</p>
+    <h1>ご回答ありがとうございました</h1>
+    <p>
+      アンケートはこれで終了です。<br>
+      ご協力いただき、誠にありがとうございました。
+    </p>
   `;
 }
 
@@ -126,9 +121,7 @@ nextBtn.addEventListener("click", () => {
   }
 
   answers.push({
-    question: questions[currentIndex].text,
-    trait: questions[currentIndex].trait,
-    reverse: questions[currentIndex].reverse,
+    id: questions[currentIndex].id,
     value: Number(selected.value)
   });
 
